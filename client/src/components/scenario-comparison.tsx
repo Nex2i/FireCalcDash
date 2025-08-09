@@ -5,15 +5,15 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Edit, Trash2, Plus, Save, FolderOpen } from "lucide-react";
 import { useState } from "react";
-import type { Scenario } from "@shared/schema";
+import type { StoredScenario } from "@/lib/local-storage";
 import type { FireInputs } from "@/lib/fire-calculations";
 import { formatCurrency } from "@/lib/fire-calculations";
 
 interface ScenarioComparisonProps {
-  scenarios: Scenario[];
+  scenarios: StoredScenario[];
   currentInputs: FireInputs;
   onSaveScenario: (name: string) => void;
-  onLoadScenario: (scenario: Scenario) => void;
+  onLoadScenario: (scenario: StoredScenario) => void;
   onDeleteScenario: (id: string) => void;
 }
 

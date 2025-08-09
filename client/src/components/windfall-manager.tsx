@@ -81,7 +81,7 @@ export function WindfallManager({ windfalls, onChange }: WindfallManagerProps) {
                     <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">$</span>
                     <Input
                       type="text"
-                      value={windfall.amount.toLocaleString()}
+                      value={(windfall.amount || 0).toLocaleString()}
                       onChange={(e) => {
                         const value = parseInt(e.target.value.replace(/,/g, '')) || 0;
                         updateWindfall(windfall.id, { amount: value });
