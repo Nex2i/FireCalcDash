@@ -61,6 +61,20 @@ export function FireCalculator() {
   const [scenarios, setScenarios] = useState<StoredScenario[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Projection table column visibility (persisted)
+  type ColumnKey =
+    | "age"
+    | "year"
+    | "annualContribution"
+    | "withdrawalNominal"
+    | "withdrawalReal"
+    | "investmentGrowth"
+    | "fireTarget"
+    | "windfallYear";
+  const [hiddenColumns, setHiddenColumns] = useState<
+    Partial<Record<ColumnKey, boolean>>
+  >({});
+
   // Load scenarios from localStorage on component mount
   useEffect(() => {
     try {
@@ -74,6 +88,35 @@ export function FireCalculator() {
       });
     }
   }, []);
+
+  // Load hidden column preferences
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("projection-hidden-columns");
+      if (saved) {
+        const parsed = JSON.parse(saved) as Partial<Record<ColumnKey, boolean>>;
+        setHiddenColumns(parsed || {});
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, []);
+
+  // Persist hidden column preferences
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        "projection-hidden-columns",
+        JSON.stringify(hiddenColumns)
+      );
+    } catch (e) {
+      // ignore
+    }
+  }, [hiddenColumns]);
+
+  const toggleColumn = (key: ColumnKey) => {
+    setHiddenColumns((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
 
   // Calculate FIRE results in real-time
   const fireResult = useMemo(() => {
@@ -941,30 +984,94 @@ export function FireCalculator() {
                 target.
               </p>
               <div className="flex flex-wrap gap-4 mt-4 text-xs">
-                <div className="flex items-center space-x-1">
+                <button
+                  type="button"
+                  onClick={() => toggleColumn("age")}
+                  className={`flex items-center space-x-1 px-2 py-1 rounded border ${
+                    hiddenColumns.age ? "opacity-50 line-through" : ""
+                  }`}
+                >
+                  <div className="w-3 h-3 bg-gray-500 rounded"></div>
+                  <span>Age</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleColumn("year")}
+                  className={`flex items-center space-x-1 px-2 py-1 rounded border ${
+                    hiddenColumns.year ? "opacity-50 line-through" : ""
+                  }`}
+                >
+                  <div className="w-3 h-3 bg-gray-400 rounded"></div>
+                  <span>Year</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleColumn("annualContribution")}
+                  className={`flex items-center space-x-1 px-2 py-1 rounded border ${
+                    hiddenColumns.annualContribution
+                      ? "opacity-50 line-through"
+                      : ""
+                  }`}
+                >
                   <div className="w-3 h-3 bg-blue-600 rounded"></div>
                   <span>Contributions</span>
-                </div>
-                <div className="flex items-center space-x-1">
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleColumn("withdrawalNominal")}
+                  className={`flex items-center space-x-1 px-2 py-1 rounded border ${
+                    hiddenColumns.withdrawalNominal
+                      ? "opacity-50 line-through"
+                      : ""
+                  }`}
+                >
                   <div className="w-3 h-3 bg-purple-600 rounded"></div>
                   <span>Withdrawal (Nominal)</span>
-                </div>
-                <div className="flex items-center space-x-1">
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleColumn("withdrawalReal")}
+                  className={`flex items-center space-x-1 px-2 py-1 rounded border ${
+                    hiddenColumns.withdrawalReal
+                      ? "opacity-50 line-through"
+                      : ""
+                  }`}
+                >
                   <div className="w-3 h-3 bg-purple-700 rounded"></div>
                   <span>Withdrawal (Real)</span>
-                </div>
-                <div className="flex items-center space-x-1">
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleColumn("investmentGrowth")}
+                  className={`flex items-center space-x-1 px-2 py-1 rounded border ${
+                    hiddenColumns.investmentGrowth
+                      ? "opacity-50 line-through"
+                      : ""
+                  }`}
+                >
                   <div className="w-3 h-3 bg-green-600 rounded"></div>
                   <span>Investment Growth</span>
-                </div>
-                <div className="flex items-center space-x-1">
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleColumn("fireTarget")}
+                  className={`flex items-center space-x-1 px-2 py-1 rounded border ${
+                    hiddenColumns.fireTarget ? "opacity-50 line-through" : ""
+                  }`}
+                >
                   <div className="w-3 h-3 bg-orange-600 rounded"></div>
                   <span>FIRE Target</span>
-                </div>
-                <div className="flex items-center space-x-1">
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleColumn("windfallYear")}
+                  className={`flex items-center space-x-1 px-2 py-1 rounded border ${
+                    hiddenColumns.windfallYear ? "opacity-50 line-through" : ""
+                  }`}
+                >
                   <div className="w-3 h-3 bg-yellow-600 rounded"></div>
                   <span>Windfall Year</span>
-                </div>
+                </button>
               </div>
             </CardHeader>
             <CardContent>
@@ -975,44 +1082,49 @@ export function FireCalculator() {
                 <table className="w-full text-sm">
                   <thead className="sticky top-0 bg-white z-10">
                     <tr className="border-b border-gray-200 shadow-sm">
-                      <th className="text-left py-3 px-2 font-medium text-gray-700 bg-white">
-                        <span className="inline-flex items-center gap-1">
-                          Age
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                type="button"
-                                className="text-gray-400 hover:text-gray-600"
-                                aria-label="Age column definition"
-                              >
-                                <Info size={14} />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              Your age during the given year of the projection.
-                            </TooltipContent>
-                          </Tooltip>
-                        </span>
-                      </th>
-                      <th className="text-center py-3 px-2 font-medium text-gray-700 bg-white">
-                        <span className="inline-flex items-center gap-1">
-                          Year
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                type="button"
-                                className="text-gray-400 hover:text-gray-600"
-                                aria-label="Year column definition"
-                              >
-                                <Info size={14} />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              Calendar year for this row.
-                            </TooltipContent>
-                          </Tooltip>
-                        </span>
-                      </th>
+                      {!hiddenColumns.age && (
+                        <th className="text-left py-3 px-2 font-medium text-gray-700 bg-white">
+                          <span className="inline-flex items-center gap-1">
+                            Age
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  type="button"
+                                  className="text-gray-400 hover:text-gray-600"
+                                  aria-label="Age column definition"
+                                >
+                                  <Info size={14} />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                Your age during the given year of the
+                                projection.
+                              </TooltipContent>
+                            </Tooltip>
+                          </span>
+                        </th>
+                      )}
+                      {!hiddenColumns.year && (
+                        <th className="text-center py-3 px-2 font-medium text-gray-700 bg-white">
+                          <span className="inline-flex items-center gap-1">
+                            Year
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  type="button"
+                                  className="text-gray-400 hover:text-gray-600"
+                                  aria-label="Year column definition"
+                                >
+                                  <Info size={14} />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                Calendar year for this row.
+                              </TooltipContent>
+                            </Tooltip>
+                          </span>
+                        </th>
+                      )}
                       <th className="text-right py-3 px-2 font-medium text-gray-700 bg-white">
                         <span className="inline-flex items-center gap-1 justify-end w-full">
                           Investment Value
@@ -1032,104 +1144,114 @@ export function FireCalculator() {
                           </Tooltip>
                         </span>
                       </th>
-                      <th className="text-right py-3 px-2 font-medium text-gray-700 bg-white">
-                        <span className="inline-flex items-center gap-1 justify-end w-full">
-                          Annual Contribution
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                type="button"
-                                className="text-gray-400 hover:text-gray-600"
-                                aria-label="Annual contribution definition"
-                              >
-                                <Info size={14} />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              Total added this year (monthly × 12), plus any
-                              windfalls.
-                            </TooltipContent>
-                          </Tooltip>
-                        </span>
-                      </th>
-                      <th className="text-right py-3 px-2 font-medium text-gray-700 bg-white">
-                        <span className="inline-flex items-center gap-1 justify-end w-full">
-                          Potential Withdrawal (Nominal)
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                type="button"
-                                className="text-gray-400 hover:text-gray-600"
-                                aria-label="Nominal withdrawal definition"
-                              >
-                                <Info size={14} />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              Withdrawal at your rate using same-year dollars.
-                            </TooltipContent>
-                          </Tooltip>
-                        </span>
-                      </th>
-                      <th className="text-right py-3 px-2 font-medium text-gray-700 bg-white">
-                        <span className="inline-flex items-center gap-1 justify-end w-full">
-                          Potential Withdrawal (Real)
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                type="button"
-                                className="text-gray-400 hover:text-gray-600"
-                                aria-label="Real withdrawal definition"
-                              >
-                                <Info size={14} />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              Nominal withdrawal adjusted back to today's
-                              dollars.
-                            </TooltipContent>
-                          </Tooltip>
-                        </span>
-                      </th>
-                      <th className="text-right py-3 px-2 font-medium text-gray-700 bg-white">
-                        <span className="inline-flex items-center gap-1 justify-end w-full">
-                          Investment Growth
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                type="button"
-                                className="text-gray-400 hover:text-gray-600"
-                                aria-label="Investment growth definition"
-                              >
-                                <Info size={14} />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              Return earned this year from market growth.
-                            </TooltipContent>
-                          </Tooltip>
-                        </span>
-                      </th>
-                      <th className="text-right py-3 px-2 font-medium text-gray-700 bg-white">
-                        <span className="inline-flex items-center gap-1 justify-end w-full">
-                          FIRE Target
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                type="button"
-                                className="text-gray-400 hover:text-gray-600"
-                                aria-label="FIRE target definition"
-                              >
-                                <Info size={14} />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              Nominal target: real FIRE number grown by
-                              inflation.
-                            </TooltipContent>
-                          </Tooltip>
-                        </span>
-                      </th>
+                      {!hiddenColumns.annualContribution && (
+                        <th className="text-right py-3 px-2 font-medium text-gray-700 bg-white">
+                          <span className="inline-flex items-center gap-1 justify-end w-full">
+                            Annual Contribution
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  type="button"
+                                  className="text-gray-400 hover:text-gray-600"
+                                  aria-label="Annual contribution definition"
+                                >
+                                  <Info size={14} />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                Total added this year (monthly × 12), plus any
+                                windfalls.
+                              </TooltipContent>
+                            </Tooltip>
+                          </span>
+                        </th>
+                      )}
+                      {!hiddenColumns.withdrawalNominal && (
+                        <th className="text-right py-3 px-2 font-medium text-gray-700 bg-white">
+                          <span className="inline-flex items-center gap-1 justify-end w-full">
+                            Potential Withdrawal (Nominal)
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  type="button"
+                                  className="text-gray-400 hover:text-gray-600"
+                                  aria-label="Nominal withdrawal definition"
+                                >
+                                  <Info size={14} />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                Withdrawal at your rate using same-year dollars.
+                              </TooltipContent>
+                            </Tooltip>
+                          </span>
+                        </th>
+                      )}
+                      {!hiddenColumns.withdrawalReal && (
+                        <th className="text-right py-3 px-2 font-medium text-gray-700 bg-white">
+                          <span className="inline-flex items-center gap-1 justify-end w-full">
+                            Potential Withdrawal (Real)
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  type="button"
+                                  className="text-gray-400 hover:text-gray-600"
+                                  aria-label="Real withdrawal definition"
+                                >
+                                  <Info size={14} />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                Nominal withdrawal adjusted back to today's
+                                dollars.
+                              </TooltipContent>
+                            </Tooltip>
+                          </span>
+                        </th>
+                      )}
+                      {!hiddenColumns.investmentGrowth && (
+                        <th className="text-right py-3 px-2 font-medium text-gray-700 bg-white">
+                          <span className="inline-flex items-center gap-1 justify-end w-full">
+                            Investment Growth
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  type="button"
+                                  className="text-gray-400 hover:text-gray-600"
+                                  aria-label="Investment growth definition"
+                                >
+                                  <Info size={14} />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                Return earned this year from market growth.
+                              </TooltipContent>
+                            </Tooltip>
+                          </span>
+                        </th>
+                      )}
+                      {!hiddenColumns.fireTarget && (
+                        <th className="text-right py-3 px-2 font-medium text-gray-700 bg-white">
+                          <span className="inline-flex items-center gap-1 justify-end w-full">
+                            FIRE Target
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  type="button"
+                                  className="text-gray-400 hover:text-gray-600"
+                                  aria-label="FIRE target definition"
+                                >
+                                  <Info size={14} />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                Nominal target: real FIRE number grown by
+                                inflation.
+                              </TooltipContent>
+                            </Tooltip>
+                          </span>
+                        </th>
+                      )}
                       <th className="text-center py-3 px-2 font-medium text-gray-700 bg-white">
                         <span className="inline-flex items-center gap-1">
                           Status
@@ -1159,18 +1281,23 @@ export function FireCalculator() {
                         className={`border-b border-gray-100 hover:bg-gray-50 ${
                           yearData.status === "fire"
                             ? "bg-green-50"
-                            : yearData.status === "windfall"
+                            : yearData.status === "windfall" &&
+                              !hiddenColumns.windfallYear
                             ? "bg-yellow-50"
                             : ""
                         }`}
                         data-testid={`projection-row-${index}`}
                       >
-                        <td className="py-3 px-2 font-medium">
-                          {yearData.age}
-                        </td>
-                        <td className="py-3 px-2 text-center text-gray-600">
-                          {yearData.year}
-                        </td>
+                        {!hiddenColumns.age && (
+                          <td className="py-3 px-2 font-medium">
+                            {yearData.age}
+                          </td>
+                        )}
+                        {!hiddenColumns.year && (
+                          <td className="py-3 px-2 text-center text-gray-600">
+                            {yearData.year}
+                          </td>
+                        )}
                         <td
                           className={`py-3 px-2 text-right ${
                             yearData.status === "fire"
@@ -1180,27 +1307,40 @@ export function FireCalculator() {
                         >
                           {formatCurrency(yearData.investmentValue)}
                         </td>
-                        <td className="py-3 px-2 text-right text-blue-600">
-                          {formatCurrency(yearData.annualContribution)}
-                          {yearData.windfallAmount && (
-                            <div className="text-xs text-yellow-600 font-medium">
-                              +{formatCurrency(yearData.windfallAmount)}{" "}
-                              windfall
-                            </div>
-                          )}
-                        </td>
-                        <td className="py-3 px-2 text-right text-purple-600 font-medium">
-                          {formatCurrency(yearData.potentialWithdrawalNominal)}
-                        </td>
-                        <td className="py-3 px-2 text-right text-purple-700 font-medium">
-                          {formatCurrency(yearData.potentialWithdrawalReal)}
-                        </td>
-                        <td className="py-3 px-2 text-right text-green-600">
-                          {formatCurrency(yearData.investmentGrowth)}
-                        </td>
-                        <td className="py-3 px-2 text-right text-orange-600">
-                          {formatCurrency(yearData.fireTarget)}
-                        </td>
+                        {!hiddenColumns.annualContribution && (
+                          <td className="py-3 px-2 text-right text-blue-600">
+                            {formatCurrency(yearData.annualContribution)}
+                            {yearData.windfallAmount &&
+                              !hiddenColumns.windfallYear && (
+                                <div className="text-xs text-yellow-600 font-medium">
+                                  +{formatCurrency(yearData.windfallAmount)}{" "}
+                                  windfall
+                                </div>
+                              )}
+                          </td>
+                        )}
+                        {!hiddenColumns.withdrawalNominal && (
+                          <td className="py-3 px-2 text-right text-purple-600 font-medium">
+                            {formatCurrency(
+                              yearData.potentialWithdrawalNominal
+                            )}
+                          </td>
+                        )}
+                        {!hiddenColumns.withdrawalReal && (
+                          <td className="py-3 px-2 text-right text-purple-700 font-medium">
+                            {formatCurrency(yearData.potentialWithdrawalReal)}
+                          </td>
+                        )}
+                        {!hiddenColumns.investmentGrowth && (
+                          <td className="py-3 px-2 text-right text-green-600">
+                            {formatCurrency(yearData.investmentGrowth)}
+                          </td>
+                        )}
+                        {!hiddenColumns.fireTarget && (
+                          <td className="py-3 px-2 text-right text-orange-600">
+                            {formatCurrency(yearData.fireTarget)}
+                          </td>
+                        )}
                         <td className="py-3 px-2 text-center">
                           {yearData.status === "fire" ? (
                             <Badge className="bg-green-100 text-green-800 hover:bg-green-100 font-medium">

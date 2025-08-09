@@ -41,8 +41,7 @@ export function ScenarioComparison({
     }
   };
 
-  // Show up to 3 scenarios (current + 2 saved)
-  const displayScenarios = scenarios.slice(0, 2);
+  // Show all saved scenarios (unlimited)
 
   return (
     <div className="mt-8">
@@ -99,7 +98,7 @@ export function ScenarioComparison({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Current Scenario */}
           <Card className="bg-blue-50 border-2 border-blue-200">
             <CardHeader>
@@ -177,7 +176,7 @@ export function ScenarioComparison({
           </Card>
 
           {/* Saved Scenarios */}
-          {displayScenarios.map((scenario, index) => (
+          {scenarios.map((scenario, index) => (
             <Card
               key={scenario.id}
               className="bg-gray-50 border border-gray-200"
@@ -275,19 +274,7 @@ export function ScenarioComparison({
             </Card>
           ))}
 
-          {/* Empty Scenario Slot */}
-          {displayScenarios.length < 2 && (
-            <Card className="bg-gray-50 border-2 border-dashed border-gray-300">
-              <CardContent className="flex items-center justify-center h-full min-h-[200px]">
-                <div className="text-center">
-                  <Plus className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-500 text-sm">
-                    Save another scenario to compare
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          {/* No fixed empty slot; grid wraps as scenarios grow */}
         </div>
       </div>
     </div>
