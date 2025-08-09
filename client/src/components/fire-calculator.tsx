@@ -76,9 +76,7 @@ export function FireCalculator() {
       const scenarioToSave = {
         name,
         ...inputs,
-        adjustContributionsForInflation: inputs.adjustContributionsForInflation
-          ? 1
-          : 0,
+        adjustContributionsForInflation: inputs.adjustContributionsForInflation,
       };
       const newScenario = localStorageService.saveScenario(scenarioToSave);
       setScenarios((prev) => [...prev, newScenario]);

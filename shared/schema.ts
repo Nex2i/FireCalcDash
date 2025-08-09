@@ -1,22 +1,6 @@
-import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, real, integer, json } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const scenarios = pgTable("scenarios", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  name: text("name").notNull(),
-  startingInvestments: real("starting_investments").notNull(),
-  monthlyContributions: real("monthly_contributions").notNull(),
-  currentAge: integer("current_age").notNull(),
-  annualExpenses: real("annual_expenses").notNull(),
-  annualReturn: real("annual_return").notNull().default(7),
-  inflationRate: real("inflation_rate").notNull().default(3),
-  withdrawalRate: real("withdrawal_rate").notNull().default(4),
-  adjustContributionsForInflation: integer("adjust_contributions_for_inflation").notNull().default(0),
-  windfalls: json("windfalls").notNull().default([]),
-  createdAt: text("created_at").notNull().default(sql`now()`),
-});
+// Zod schemas and TypeScript types without Drizzle
 
 export const windfallSchema = z.object({
   id: z.string(),
@@ -24,24 +8,21 @@ export const windfallSchema = z.object({
   ageReceived: z.number().int().min(18).max(120),
 });
 
-export const insertScenarioSchema = createInsertSchema(scenarios, {
+// Base scenario data used by the app (without persistence-specific fields)
+export const scenarioSchema = z.object({
+  name: z.string(),
   startingInvestments: z.number().nonnegative(),
   monthlyContributions: z.number().nonnegative(),
   currentAge: z.number().int().min(18).max(100),
   annualExpenses: z.number().positive(),
-  annualReturn: z.number().min(0).max(30),
-  inflationRate: z.number().min(0).max(20),
-  withdrawalRate: z.number().min(0.1).max(10),
-  windfalls: z.array(windfallSchema).default([]),
-}).extend({
+  annualReturn: z.number().min(0).max(30).default(7),
+  inflationRate: z.number().min(0).max(20).default(3),
+  withdrawalRate: z.number().min(0.1).max(10).default(4),
   adjustContributionsForInflation: z.boolean().default(false),
-}).omit({
-  id: true,
-  createdAt: true,
+  windfalls: z.array(windfallSchema).default([]),
 });
 
-export type InsertScenario = z.infer<typeof insertScenarioSchema>;
-export type Scenario = typeof scenarios.$inferSelect;
+export type Scenario = z.infer<typeof scenarioSchema>;
 export type Windfall = z.infer<typeof windfallSchema>;
 
 export interface FireCalculationResult {
@@ -59,6 +40,6 @@ export interface FireCalculationResult {
     fireTarget: number;
     windfallAmount?: number;
     investmentGrowth: number;
-    status: 'short' | 'windfall' | 'fire';
+    status: "short" | "windfall" | "fire";
   }[];
 }
