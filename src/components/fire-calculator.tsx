@@ -25,7 +25,13 @@ import {
   Calculator,
   BarChart3,
   Download,
+  Info,
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function FireCalculator() {
   const { toast } = useToast();
@@ -204,7 +210,24 @@ export function FireCalculator() {
 
                 <div>
                   <Label className="block text-sm font-medium text-gray-700 mb-2">
-                    Starting Liquid Investments
+                    <span className="inline-flex items-center gap-1">
+                      Starting Liquid Investments
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            className="text-gray-400 hover:text-gray-600"
+                            aria-label="What are starting liquid investments?"
+                          >
+                            <Info size={14} />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Current investable assets you can deploy (cash,
+                          brokerage, etc.).
+                        </TooltipContent>
+                      </Tooltip>
+                    </span>
                   </Label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
@@ -227,7 +250,24 @@ export function FireCalculator() {
 
                 <div>
                   <Label className="block text-sm font-medium text-gray-700 mb-2">
-                    Monthly Contributions
+                    <span className="inline-flex items-center gap-1">
+                      Monthly Contributions
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            className="text-gray-400 hover:text-gray-600"
+                            aria-label="What are monthly contributions?"
+                          >
+                            <Info size={14} />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Amount you plan to invest each month before
+                          retirement.
+                        </TooltipContent>
+                      </Tooltip>
+                    </span>
                   </Label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
@@ -259,9 +299,24 @@ export function FireCalculator() {
                     />
                     <Label
                       htmlFor="adjust-inflation"
-                      className="text-sm text-gray-600 cursor-pointer"
+                      className="text-sm text-gray-600 cursor-pointer inline-flex items-center gap-1"
                     >
                       Adjust contributions for inflation annually
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            className="text-gray-400 hover:text-gray-600"
+                            aria-label="Adjust contributions for inflation explanation"
+                          >
+                            <Info size={14} />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Increases your monthly contribution each year by the
+                          inflation rate to maintain purchasing power.
+                        </TooltipContent>
+                      </Tooltip>
                     </Label>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">
@@ -273,7 +328,24 @@ export function FireCalculator() {
 
                 <div>
                   <Label className="block text-sm font-medium text-gray-700 mb-2">
-                    Current Age
+                    <span className="inline-flex items-center gap-1">
+                      Current Age
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            className="text-gray-400 hover:text-gray-600"
+                            aria-label="What is current age?"
+                          >
+                            <Info size={14} />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Your age today. Used as the starting point for the
+                          projection.
+                        </TooltipContent>
+                      </Tooltip>
+                    </span>
                   </Label>
                   <Input
                     type="number"
@@ -289,7 +361,24 @@ export function FireCalculator() {
 
                 <div>
                   <Label className="block text-sm font-medium text-gray-700 mb-2">
-                    Expected Annual Retirement Expenses
+                    <span className="inline-flex items-center gap-1">
+                      Expected Annual Retirement Expenses
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            className="text-gray-400 hover:text-gray-600"
+                            aria-label="What are expected annual retirement expenses?"
+                          >
+                            <Info size={14} />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Your yearly spending in retirement expressed in
+                          today's dollars.
+                        </TooltipContent>
+                      </Tooltip>
+                    </span>
                   </Label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
@@ -323,7 +412,24 @@ export function FireCalculator() {
                 <div className="grid grid-cols-3 gap-3">
                   <div>
                     <Label className="block text-sm font-medium text-gray-700 mb-2">
-                      Annual Return
+                      <span className="inline-flex items-center gap-1">
+                        Annual Return
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              type="button"
+                              className="text-gray-400 hover:text-gray-600"
+                              aria-label="Annual return explanation"
+                            >
+                              <Info size={14} />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Expected average annual portfolio return before
+                            inflation.
+                          </TooltipContent>
+                        </Tooltip>
+                      </span>
                     </Label>
                     <div className="relative">
                       <Input
@@ -347,7 +453,24 @@ export function FireCalculator() {
 
                   <div>
                     <Label className="block text-sm font-medium text-gray-700 mb-2">
-                      Inflation Rate
+                      <span className="inline-flex items-center gap-1">
+                        Inflation Rate
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              type="button"
+                              className="text-gray-400 hover:text-gray-600"
+                              aria-label="Inflation rate explanation"
+                            >
+                              <Info size={14} />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Expected average increase in prices per year. Used
+                            to adjust contributions and targets.
+                          </TooltipContent>
+                        </Tooltip>
+                      </span>
                     </Label>
                     <div className="relative">
                       <Input
@@ -371,7 +494,24 @@ export function FireCalculator() {
 
                   <div>
                     <Label className="block text-sm font-medium text-gray-700 mb-2">
-                      Withdrawal Rate
+                      <span className="inline-flex items-center gap-1">
+                        Withdrawal Rate
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              type="button"
+                              className="text-gray-400 hover:text-gray-600"
+                              aria-label="Withdrawal rate explanation"
+                            >
+                              <Info size={14} />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            The percent of your portfolio you plan to withdraw
+                            annually in retirement (e.g., 4%).
+                          </TooltipContent>
+                        </Tooltip>
+                      </span>
                     </Label>
                     <div className="relative">
                       <Input
@@ -412,8 +552,23 @@ export function FireCalculator() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">
+                    <p className="text-sm font-medium text-gray-600 flex items-center gap-1">
                       Real FIRE Number
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            className="text-gray-400 hover:text-gray-600"
+                            aria-label="Real FIRE number definition"
+                          >
+                            <Info size={14} />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Target portfolio in today's dollars: annual expenses ÷
+                          (withdrawal rate).
+                        </TooltipContent>
+                      </Tooltip>
                     </p>
                     <p
                       className="text-2xl font-bold text-gray-900"
@@ -432,8 +587,23 @@ export function FireCalculator() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">
+                    <p className="text-sm font-medium text-gray-600 flex items-center gap-1">
                       Nominal FIRE Number
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            className="text-gray-400 hover:text-gray-600"
+                            aria-label="Nominal vs real FIRE number"
+                          >
+                            <Info size={14} />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Target in future dollars when you retire: real FIRE
+                          number grown by inflation.
+                        </TooltipContent>
+                      </Tooltip>
                     </p>
                     <p
                       className="text-2xl font-bold text-gray-900"
@@ -452,8 +622,23 @@ export function FireCalculator() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">
+                    <p className="text-sm font-medium text-gray-600 flex items-center gap-1">
                       Achievable Age
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            className="text-gray-400 hover:text-gray-600"
+                            aria-label="Achievable age definition"
+                          >
+                            <Info size={14} />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          The age when real withdrawal power meets or exceeds
+                          your expenses.
+                        </TooltipContent>
+                      </Tooltip>
                     </p>
                     <p
                       className="text-2xl font-bold text-gray-900"
@@ -472,8 +657,23 @@ export function FireCalculator() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">
+                    <p className="text-sm font-medium text-gray-600 flex items-center gap-1">
                       Years to Retirement
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            className="text-gray-400 hover:text-gray-600"
+                            aria-label="Years to retirement definition"
+                          >
+                            <Info size={14} />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Number of years from your current age to your
+                          achievable age.
+                        </TooltipContent>
+                      </Tooltip>
                     </p>
                     <p
                       className="text-2xl font-bold text-gray-900"
@@ -553,31 +753,179 @@ export function FireCalculator() {
                   <thead className="sticky top-0 bg-white z-10">
                     <tr className="border-b border-gray-200 shadow-sm">
                       <th className="text-left py-3 px-2 font-medium text-gray-700 bg-white">
-                        Age
+                        <span className="inline-flex items-center gap-1">
+                          Age
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                className="text-gray-400 hover:text-gray-600"
+                                aria-label="Age column definition"
+                              >
+                                <Info size={14} />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Your age during the given year of the projection.
+                            </TooltipContent>
+                          </Tooltip>
+                        </span>
                       </th>
                       <th className="text-center py-3 px-2 font-medium text-gray-700 bg-white">
-                        Year
+                        <span className="inline-flex items-center gap-1">
+                          Year
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                className="text-gray-400 hover:text-gray-600"
+                                aria-label="Year column definition"
+                              >
+                                <Info size={14} />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Calendar year for this row.
+                            </TooltipContent>
+                          </Tooltip>
+                        </span>
                       </th>
                       <th className="text-right py-3 px-2 font-medium text-gray-700 bg-white">
-                        Investment Value
+                        <span className="inline-flex items-center gap-1 justify-end w-full">
+                          Investment Value
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                className="text-gray-400 hover:text-gray-600"
+                                aria-label="Investment value definition"
+                              >
+                                <Info size={14} />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Portfolio balance at the end of the year.
+                            </TooltipContent>
+                          </Tooltip>
+                        </span>
                       </th>
                       <th className="text-right py-3 px-2 font-medium text-gray-700 bg-white">
-                        Annual Contribution
+                        <span className="inline-flex items-center gap-1 justify-end w-full">
+                          Annual Contribution
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                className="text-gray-400 hover:text-gray-600"
+                                aria-label="Annual contribution definition"
+                              >
+                                <Info size={14} />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Total added this year (monthly × 12), plus any
+                              windfalls.
+                            </TooltipContent>
+                          </Tooltip>
+                        </span>
                       </th>
                       <th className="text-right py-3 px-2 font-medium text-gray-700 bg-white">
-                        Potential Withdrawal (Nominal)
+                        <span className="inline-flex items-center gap-1 justify-end w-full">
+                          Potential Withdrawal (Nominal)
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                className="text-gray-400 hover:text-gray-600"
+                                aria-label="Nominal withdrawal definition"
+                              >
+                                <Info size={14} />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Withdrawal at your rate using same-year dollars.
+                            </TooltipContent>
+                          </Tooltip>
+                        </span>
                       </th>
                       <th className="text-right py-3 px-2 font-medium text-gray-700 bg-white">
-                        Potential Withdrawal (Real)
+                        <span className="inline-flex items-center gap-1 justify-end w-full">
+                          Potential Withdrawal (Real)
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                className="text-gray-400 hover:text-gray-600"
+                                aria-label="Real withdrawal definition"
+                              >
+                                <Info size={14} />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Nominal withdrawal adjusted back to today's
+                              dollars.
+                            </TooltipContent>
+                          </Tooltip>
+                        </span>
                       </th>
                       <th className="text-right py-3 px-2 font-medium text-gray-700 bg-white">
-                        Investment Growth
+                        <span className="inline-flex items-center gap-1 justify-end w-full">
+                          Investment Growth
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                className="text-gray-400 hover:text-gray-600"
+                                aria-label="Investment growth definition"
+                              >
+                                <Info size={14} />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Return earned this year from market growth.
+                            </TooltipContent>
+                          </Tooltip>
+                        </span>
                       </th>
                       <th className="text-right py-3 px-2 font-medium text-gray-700 bg-white">
-                        FIRE Target
+                        <span className="inline-flex items-center gap-1 justify-end w-full">
+                          FIRE Target
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                className="text-gray-400 hover:text-gray-600"
+                                aria-label="FIRE target definition"
+                              >
+                                <Info size={14} />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Nominal target: real FIRE number grown by
+                              inflation.
+                            </TooltipContent>
+                          </Tooltip>
+                        </span>
                       </th>
                       <th className="text-center py-3 px-2 font-medium text-gray-700 bg-white">
-                        Status
+                        <span className="inline-flex items-center gap-1">
+                          Status
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                className="text-gray-400 hover:text-gray-600"
+                                aria-label="Status definition"
+                              >
+                                <Info size={14} />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Highlights years you hit FIRE or receive a
+                              windfall.
+                            </TooltipContent>
+                          </Tooltip>
+                        </span>
                       </th>
                     </tr>
                   </thead>

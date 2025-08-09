@@ -1,17 +1,32 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartTooltip,
+  ResponsiveContainer,
+  ReferenceLine,
+} from "recharts";
 import type { FireCalculationResult } from "@shared/schema";
 import { formatCurrency } from "@/lib/fire-calculations";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
 
 interface InvestmentChartProps {
   result: FireCalculationResult;
 }
 
 export function InvestmentChart({ result }: InvestmentChartProps) {
-  const chartData = result.projectionData.map(data => ({
+  const chartData = result.projectionData.map((data) => ({
     age: data.age,
     investmentValue: data.investmentValue,
     fireTarget: data.fireTarget,
-    status: data.status
+    status: data.status,
   }));
 
   const formatTooltipValue = (value: number) => formatCurrency(value);
@@ -22,6 +37,23 @@ export function InvestmentChart({ result }: InvestmentChartProps) {
         <h3 className="text-lg font-semibold text-gray-900 flex items-center">
           <i className="fas fa-chart-area text-primary mr-2"></i>
           Investment Growth Projection
+          <span className="ml-2 inline-flex items-center">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  className="text-gray-400 hover:text-gray-600"
+                  aria-label="Investment growth chart explanation"
+                >
+                  <Info size={16} />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Shows your portfolio balance over time compared to your FIRE
+                target.
+              </TooltipContent>
+            </Tooltip>
+          </span>
         </h3>
         <div className="flex items-center space-x-4 text-sm">
           <div className="flex items-center">
@@ -38,50 +70,50 @@ export function InvestmentChart({ result }: InvestmentChartProps) {
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis 
-              dataKey="age" 
+            <XAxis
+              dataKey="age"
               stroke="#666"
               fontSize={12}
               tickFormatter={(value) => `Age ${value}`}
             />
-            <YAxis 
+            <YAxis
               stroke="#666"
               fontSize={12}
               tickFormatter={formatTooltipValue}
             />
-            <Tooltip 
+            <RechartTooltip
               formatter={(value: number, name: string) => [
-                formatCurrency(value), 
-                name === 'investmentValue' ? 'Investment Value' : 'FIRE Target'
+                formatCurrency(value),
+                name === "investmentValue" ? "Investment Value" : "FIRE Target",
               ]}
               labelFormatter={(age) => `Age ${age}`}
               contentStyle={{
-                backgroundColor: 'white',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                backgroundColor: "white",
+                border: "1px solid #e5e7eb",
+                borderRadius: "8px",
+                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
               }}
             />
-            <Line 
-              type="monotone" 
-              dataKey="investmentValue" 
+            <Line
+              type="monotone"
+              dataKey="investmentValue"
               stroke="#1976D2"
               strokeWidth={3}
               dot={false}
               activeDot={{ r: 4, fill: "#1976D2" }}
             />
-            <Line 
-              type="monotone" 
-              dataKey="fireTarget" 
+            <Line
+              type="monotone"
+              dataKey="fireTarget"
               stroke="#F57C00"
               strokeWidth={2}
               strokeDasharray="5 5"
               dot={false}
             />
             {result.achievableAge > 0 && (
-              <ReferenceLine 
-                x={result.achievableAge} 
-                stroke="#4CAF50" 
+              <ReferenceLine
+                x={result.achievableAge}
+                stroke="#4CAF50"
                 strokeDasharray="3 3"
                 label={{ value: "FIRE!", position: "top" }}
               />

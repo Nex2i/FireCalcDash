@@ -1,6 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Trash2, Plus } from "lucide-react";
 import type { Windfall } from "@shared/schema";
 
@@ -19,23 +24,40 @@ export function WindfallManager({ windfalls, onChange }: WindfallManagerProps) {
     const newWindfall: Windfall = {
       id: generateId(),
       amount: 100000,
-      ageReceived: 45
+      ageReceived: 45,
     };
     onChange([...windfalls, newWindfall]);
   };
 
   const removeWindfall = (id: string) => {
-    onChange(windfalls.filter(w => w.id !== id));
+    onChange(windfalls.filter((w) => w.id !== id));
   };
 
   const updateWindfall = (id: string, updates: Partial<Windfall>) => {
-    onChange(windfalls.map(w => w.id === id ? { ...w, ...updates } : w));
+    onChange(windfalls.map((w) => (w.id === id ? { ...w, ...updates } : w)));
   };
 
   return (
     <div className="space-y-4 pt-6 border-t border-gray-200">
       <div className="flex justify-between items-center">
-        <h3 className="text-sm font-medium text-gray-700 uppercase tracking-wide">Windfalls</h3>
+        <h3 className="text-sm font-medium text-gray-700 uppercase tracking-wide inline-flex items-center gap-1">
+          Windfalls
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                className="text-gray-400 hover:text-gray-600"
+                aria-label="What are windfalls?"
+              >
+                i
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              One-time lump sums added to your portfolio at a specific age
+              (e.g., inheritance, bonus).
+            </TooltipContent>
+          </Tooltip>
+        </h3>
         <Button
           onClick={addWindfall}
           variant="ghost"
@@ -55,8 +77,8 @@ export function WindfallManager({ windfalls, onChange }: WindfallManagerProps) {
       ) : (
         <div className="space-y-3">
           {windfalls.map((windfall, index) => (
-            <div 
-              key={windfall.id} 
+            <div
+              key={windfall.id}
               className="bg-gray-50 rounded-lg p-4 space-y-3"
               data-testid={`windfall-item-${index}`}
             >
@@ -76,14 +98,19 @@ export function WindfallManager({ windfalls, onChange }: WindfallManagerProps) {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-xs font-medium text-gray-600 mb-1">Amount</Label>
+                  <Label className="text-xs font-medium text-gray-600 mb-1">
+                    Amount
+                  </Label>
                   <div className="relative">
-                    <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">$</span>
+                    <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">
+                      $
+                    </span>
                     <Input
                       type="text"
                       value={(windfall.amount || 0).toLocaleString()}
                       onChange={(e) => {
-                        const value = parseInt(e.target.value.replace(/,/g, '')) || 0;
+                        const value =
+                          parseInt(e.target.value.replace(/,/g, "")) || 0;
                         updateWindfall(windfall.id, { amount: value });
                       }}
                       className="pl-6 pr-2 py-2 text-sm"
@@ -92,7 +119,9 @@ export function WindfallManager({ windfalls, onChange }: WindfallManagerProps) {
                   </div>
                 </div>
                 <div>
-                  <Label className="text-xs font-medium text-gray-600 mb-1">Age Received</Label>
+                  <Label className="text-xs font-medium text-gray-600 mb-1">
+                    Age Received
+                  </Label>
                   <Input
                     type="number"
                     value={windfall.ageReceived}
