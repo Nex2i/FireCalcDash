@@ -1,0 +1,70 @@
+## FIRE Number Calculator Dashboard – Product Specification
+
+### **Purpose**
+
+A simple web app dashboard to help users determine the earliest age they can retire based on the FIRE (Financial Independence, Retire Early) methodology. It calculates the retirement “FIRE number” in both real (today’s dollars) and nominal terms, then finds the age when investments meet or exceed the nominal target.
+
+---
+
+### **User Inputs**
+
+#### **Required Fields**
+
+* **Starting Liquid Investments** – Current total invested assets in USD.
+* **Monthly Contributions** – Amount contributed each month, annualized in calculation.
+* **Current Age** – User’s present age in years.
+* **Expected Real Annual Retirement Expenses** – Estimated yearly living expenses in today’s dollars.
+* **Windfalls** – Multiple entries, each with:
+
+  * **Amount** (USD)
+  * **Age received** (years)
+
+#### **Default Optional Fields** (Prefilled, editable)
+
+* **Annual Return (%)** – Default: `7`
+* **Average Inflation Rate (%)** – Default: `3`
+* **Withdrawal Rate (%)** – Default: `4`
+
+---
+
+### **Outputs**
+
+* **Real FIRE Number** – `Annual Expenses / Withdrawal Rate` (in today’s dollars).
+* **Nominal FIRE Number** – Adjusted for inflation to the target year.
+* **Achievable Age** – Age when projected investments meet or exceed nominal FIRE number.
+* **Years to Retirement** – Achievable Age – Current Age.
+* **Investment Growth Chart** – Annual projection of assets vs. nominal FIRE number line.
+* **Scenario Comparison Table** – Side-by-side comparison of up to 3 saved scenarios.
+
+---
+
+### **Calculation Rules**
+
+1. **Compounding** – Annual compounding on contributions and existing investments.
+2. **Windfalls** – Added at the start of the year in which they occur.
+3. **Inflation Adjustment** – Nominal FIRE number = Real FIRE number × `(1 + inflation rate) ^ years until retirement`.
+4. **Crossover Point** – Find the first year where `total investments >= nominal FIRE number`.
+5. **Rounding** – Output values rounded to nearest \$1,000; ages rounded to nearest year.
+
+---
+
+### **UI Requirements**
+
+* **Instant Calculation** – All results update live as inputs change.
+* **Dynamic Windfall List** – Add/remove multiple windfall entries.
+* **Charts** – Interactive line chart showing:
+
+  * Investment growth over time
+  * Nominal FIRE number line
+  * Highlighted crossover year
+* **Scenario Saving & Comparison** – Save scenario inputs/outputs and view up to 3 side-by-side.
+* **Currency** – USD only.
+
+---
+
+### **Example Scenario**
+
+* Real expenses: \$200k/year
+* Real FIRE number: \$5M (`200k / 0.04`)
+* Achieved in 20 years, inflation 3% → Nominal FIRE number: \$9.03M.
+* Investment growth curve shows crossing \$9.03M at age 55 → user can retire then.

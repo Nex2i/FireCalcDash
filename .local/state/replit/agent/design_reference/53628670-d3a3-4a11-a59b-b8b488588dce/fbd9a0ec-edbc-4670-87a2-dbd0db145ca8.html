@@ -1,0 +1,603 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIRE Number Calculator Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#1976D2',
+                        secondary: '#388E3C', 
+                        accent: '#F57C00',
+                        success: '#4CAF50',
+                        error: '#F44336',
+                        warning: '#FF9800'
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+<body class="bg-gray-50 font-inter">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-fire text-2xl text-accent mr-3"></i>
+                    <h1 class="text-xl font-bold text-gray-900">FIRE Calculator Dashboard</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium">
+                        <i class="fas fa-save mr-2"></i>Save Scenario
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Input Form Section -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                        <i class="fas fa-calculator text-primary mr-2"></i>
+                        Calculator Inputs
+                    </h2>
+                    
+                    <!-- Required Fields -->
+                    <div class="space-y-4 mb-6">
+                        <h3 class="text-sm font-medium text-gray-700 uppercase tracking-wide">Required Information</h3>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Starting Liquid Investments</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                                <input 
+                                    type="text" 
+                                    data-bind="startingInvestments"
+                                    data-mock="true"
+                                    value="500,000"
+                                    class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+                                    placeholder="0"
+                                >
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Monthly Contributions</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                                <input 
+                                    type="text" 
+                                    data-bind="monthlyContributions"
+                                    data-mock="true"
+                                    value="8,000"
+                                    class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+                                    placeholder="0"
+                                >
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Current Age</label>
+                            <input 
+                                type="number" 
+                                data-bind="currentAge"
+                                data-mock="true"
+                                value="35"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+                                placeholder="Years"
+                            >
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Expected Annual Retirement Expenses</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                                <input 
+                                    type="text" 
+                                    data-bind="annualExpenses"
+                                    data-mock="true"
+                                    value="200,000"
+                                    class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+                                    placeholder="0"
+                                >
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">In today's dollars</p>
+                        </div>
+                    </div>
+
+                    <!-- Optional Fields -->
+                    <div class="space-y-4 mb-6 pt-6 border-t border-gray-200">
+                        <h3 class="text-sm font-medium text-gray-700 uppercase tracking-wide">Advanced Settings</h3>
+                        
+                        <div class="grid grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Annual Return</label>
+                                <div class="relative">
+                                    <input 
+                                        type="number" 
+                                        data-bind="annualReturn"
+                                        data-mock="true"
+                                        value="7"
+                                        step="0.1"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 text-sm"
+                                    >
+                                    <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">%</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Inflation Rate</label>
+                                <div class="relative">
+                                    <input 
+                                        type="number" 
+                                        data-bind="inflationRate"
+                                        data-mock="true"
+                                        value="3"
+                                        step="0.1"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 text-sm"
+                                    >
+                                    <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">%</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Withdrawal Rate</label>
+                                <div class="relative">
+                                    <input 
+                                        type="number" 
+                                        data-bind="withdrawalRate"
+                                        data-mock="true"
+                                        value="4"
+                                        step="0.1"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 text-sm"
+                                    >
+                                    <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Windfalls Section -->
+                    <div class="space-y-4 pt-6 border-t border-gray-200">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-sm font-medium text-gray-700 uppercase tracking-wide">Windfalls</h3>
+                            <button 
+                                data-event="click:addWindfall"
+                                class="text-primary hover:text-blue-700 text-sm font-medium flex items-center transition-colors duration-200"
+                            >
+                                <i class="fas fa-plus mr-1"></i>Add Windfall
+                            </button>
+                        </div>
+                        
+                        <!-- @MAP: windfalls.map(windfall => ( -->
+                        <div class="bg-gray-50 rounded-lg p-4 space-y-3" data-mock="true">
+                            <div class="flex justify-between items-start">
+                                <span class="text-sm font-medium text-gray-700">Windfall #1</span>
+                                <button class="text-gray-400 hover:text-red-500 transition-colors duration-200">
+                                    <i class="fas fa-trash text-sm"></i>
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Amount</label>
+                                    <div class="relative">
+                                        <span class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">$</span>
+                                        <input 
+                                            type="text" 
+                                            data-mock="true"
+                                            value="100,000"
+                                            class="w-full pl-6 pr-2 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        >
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Age Received</label>
+                                    <input 
+                                        type="number" 
+                                        data-mock="true"
+                                        value="45"
+                                        class="w-full px-2 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                        
+                        <div class="text-center py-4" data-mock="true" style="display: none;">
+                            <p class="text-sm text-gray-500">No windfalls added yet</p>
+                        </div>
+                    </div>
+
+                    <!-- Calculate Button -->
+                    <div class="pt-6">
+                        <button 
+                            data-event="click:calculate"
+                            class="w-full bg-secondary text-white py-3 px-4 rounded-lg hover:bg-green-600 transition-colors duration-200 font-medium flex items-center justify-center"
+                        >
+                            <i class="fas fa-chart-line mr-2"></i>
+                            Calculate FIRE Number
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results and Chart Section -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Key Results Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Real FIRE Number</p>
+                                <p class="text-2xl font-bold text-gray-900" data-bind="realFireNumber" data-mock="true">$5.0M</p>
+                                <p class="text-xs text-gray-500">Today's dollars</p>
+                            </div>
+                            <div class="bg-primary bg-opacity-10 p-3 rounded-lg">
+                                <i class="fas fa-dollar-sign text-primary text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Nominal FIRE Number</p>
+                                <p class="text-2xl font-bold text-gray-900" data-bind="nominalFireNumber" data-mock="true">$9.0M</p>
+                                <p class="text-xs text-gray-500">Future dollars</p>
+                            </div>
+                            <div class="bg-accent bg-opacity-10 p-3 rounded-lg">
+                                <i class="fas fa-chart-line text-accent text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Achievable Age</p>
+                                <p class="text-2xl font-bold text-gray-900" data-bind="achievableAge" data-mock="true">55</p>
+                                <p class="text-xs text-gray-500">Years old</p>
+                            </div>
+                            <div class="bg-secondary bg-opacity-10 p-3 rounded-lg">
+                                <i class="fas fa-calendar-check text-secondary text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Years to Retirement</p>
+                                <p class="text-2xl font-bold text-gray-900" data-bind="yearsToRetirement" data-mock="true">20</p>
+                                <p class="text-xs text-gray-500">Years remaining</p>
+                            </div>
+                            <div class="bg-warning bg-opacity-10 p-3 rounded-lg">
+                                <i class="fas fa-hourglass-half text-warning text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Investment Growth Chart -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <i class="fas fa-chart-area text-primary mr-2"></i>
+                            Investment Growth Projection
+                        </h3>
+                        <div class="flex items-center space-x-4 text-sm">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-primary rounded-full mr-2"></div>
+                                <span class="text-gray-600">Investment Value</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-accent rounded-full mr-2"></div>
+                                <span class="text-gray-600">FIRE Target</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-80">
+                        <canvas id="investmentChart" data-implementation="Chart.js line chart showing investment growth vs FIRE target"></canvas>
+                    </div>
+                </div>
+
+                <!-- Detailed Projection Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-table text-primary mr-2"></i>
+                        Year-by-Year Projection
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-gray-200">
+                                    <th class="text-left py-3 px-4 font-medium text-gray-700">Age</th>
+                                    <th class="text-right py-3 px-4 font-medium text-gray-700">Investment Value</th>
+                                    <th class="text-right py-3 px-4 font-medium text-gray-700">Annual Contribution</th>
+                                    <th class="text-right py-3 px-4 font-medium text-gray-700">FIRE Target</th>
+                                    <th class="text-center py-3 px-4 font-medium text-gray-700">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody data-mock="true">
+                                <!-- @MAP: projectionData.map(year => ( -->
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-4 font-medium">35</td>
+                                    <td class="py-3 px-4 text-right">$596,000</td>
+                                    <td class="py-3 px-4 text-right">$96,000</td>
+                                    <td class="py-3 px-4 text-right">$5,154,000</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            Short
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-4 font-medium">40</td>
+                                    <td class="py-3 px-4 text-right">$1,456,000</td>
+                                    <td class="py-3 px-4 text-right">$96,000</td>
+                                    <td class="py-3 px-4 text-right">$5,970,000</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            Short
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-4 font-medium">45</td>
+                                    <td class="py-3 px-4 text-right">$2,856,000</td>
+                                    <td class="py-3 px-4 text-right">$96,000</td>
+                                    <td class="py-3 px-4 text-right">$6,922,000</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            +Windfall
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="py-3 px-4 font-medium">50</td>
+                                    <td class="py-3 px-4 text-right">$5,324,000</td>
+                                    <td class="py-3 px-4 text-right">$96,000</td>
+                                    <td class="py-3 px-4 text-right">$8,021,000</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            Short
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50 bg-green-50">
+                                    <td class="py-3 px-4 font-medium">55</td>
+                                    <td class="py-3 px-4 text-right font-semibold text-green-700">$9,287,000</td>
+                                    <td class="py-3 px-4 text-right">$96,000</td>
+                                    <td class="py-3 px-4 text-right">$9,289,000</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <i class="fas fa-check mr-1"></i>
+                                            FIRE!
+                                        </span>
+                                    </td>
+                                </tr>
+                                <!-- @END_MAP )) -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scenario Comparison Section -->
+        <div class="mt-8">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <i class="fas fa-layer-group text-primary mr-2"></i>
+                        Scenario Comparison
+                    </h3>
+                    <div class="flex space-x-2">
+                        <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors duration-200 text-sm">
+                            Load Scenario
+                        </button>
+                        <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm">
+                            Save Current
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" data-mock="true">
+                    <!-- Current Scenario -->
+                    <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                        <div class="flex justify-between items-start mb-4">
+                            <h4 class="font-semibold text-gray-900">Current Scenario</h4>
+                            <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                Active
+                            </span>
+                        </div>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Starting Investments:</span>
+                                <span class="font-medium">$500K</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Monthly Contribution:</span>
+                                <span class="font-medium">$8K</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Current Age:</span>
+                                <span class="font-medium">35</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Annual Expenses:</span>
+                                <span class="font-medium">$200K</span>
+                            </div>
+                            <hr class="border-gray-300">
+                            <div class="flex justify-between font-semibold">
+                                <span class="text-gray-900">FIRE Age:</span>
+                                <span class="text-green-600">55</span>
+                            </div>
+                            <div class="flex justify-between font-semibold">
+                                <span class="text-gray-900">Years to FIRE:</span>
+                                <span class="text-green-600">20</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Saved Scenario 1 -->
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-start mb-4">
+                            <h4 class="font-semibold text-gray-900">Conservative Plan</h4>
+                            <div class="flex space-x-1">
+                                <button class="text-gray-400 hover:text-primary transition-colors">
+                                    <i class="fas fa-edit text-sm"></i>
+                                </button>
+                                <button class="text-gray-400 hover:text-red-500 transition-colors">
+                                    <i class="fas fa-trash text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Starting Investments:</span>
+                                <span class="font-medium">$400K</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Monthly Contribution:</span>
+                                <span class="font-medium">$6K</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Current Age:</span>
+                                <span class="font-medium">35</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Annual Expenses:</span>
+                                <span class="font-medium">$150K</span>
+                            </div>
+                            <hr class="border-gray-300">
+                            <div class="flex justify-between font-semibold">
+                                <span class="text-gray-900">FIRE Age:</span>
+                                <span class="text-green-600">58</span>
+                            </div>
+                            <div class="flex justify-between font-semibold">
+                                <span class="text-gray-900">Years to FIRE:</span>
+                                <span class="text-green-600">23</span>
+                            </div>
+                        </div>
+                        <button class="w-full mt-4 bg-gray-200 text-gray-700 py-2 px-3 rounded text-sm hover:bg-gray-300 transition-colors">
+                            Load Scenario
+                        </button>
+                    </div>
+
+                    <!-- Empty Scenario Slot -->
+                    <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-4 flex items-center justify-center">
+                        <div class="text-center">
+                            <i class="fas fa-plus text-gray-400 text-2xl mb-2"></i>
+                            <p class="text-gray-500 text-sm">Save another scenario to compare</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none;">
+        <div class="bg-white rounded-lg p-6 flex items-center space-x-4">
+            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+            <span class="text-gray-700">Calculating FIRE projection...</span>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // TODO: Implement business logic, API calls, or state management
+            
+            // Chart initialization
+            const ctx = document.getElementById('investmentChart').getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Age 35', 'Age 40', 'Age 45', 'Age 50', 'Age 55', 'Age 60'],
+                    datasets: [{
+                        label: 'Investment Value',
+                        data: [500000, 1456000, 2956000, 5324000, 9287000, 15789000],
+                        borderColor: '#1976D2',
+                        backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'FIRE Target',
+                        data: [5154000, 5970000, 6922000, 8021000, 9289000, 10769000],
+                        borderColor: '#F57C00',
+                        backgroundColor: 'transparent',
+                        borderDash: [5, 5],
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + (value / 1000000).toFixed(1) + 'M';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Mock real-time calculation updates
+            function updateCalculations() {
+                // TODO: Implement real-time FIRE calculations
+                console.log('Updating FIRE calculations...');
+            }
+
+            // Form input listeners for real-time updates
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', updateCalculations);
+            });
+
+            // Add windfall functionality
+            document.querySelector('[data-event="click:addWindfall"]').addEventListener('click', function() {
+                // TODO: Add new windfall entry to the list
+                console.log('Adding new windfall entry...');
+            });
+
+            // Save scenario functionality
+            document.querySelector('[data-event="click:calculate"]').addEventListener('click', function() {
+                // Show loading state
+                document.getElementById('loadingOverlay').style.display = 'flex';
+                
+                setTimeout(() => {
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                    // TODO: Perform FIRE calculations and update results
+                    console.log('FIRE calculations completed');
+                }, 1500);
+            });
+        })();
+    </script>
+</body>
+</html>
