@@ -1,3 +1,10 @@
+ [build]
+   command = "npm run build"
+   publish = "dist/public"
+
+ [functions]
+   directory = "netlify/functions"
+
 # Redirects all requests to index.html to support SPA routing
 [[redirects]]
 from = "/*"
