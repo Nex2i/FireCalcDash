@@ -13,6 +13,12 @@ export const scenarioSchema = z.object({
   name: z.string(),
   startingInvestments: z.number().nonnegative(),
   monthlyContributions: z.number().nonnegative(),
+  // How contributions are determined: fixed monthly amount or % of salary
+  contributionMode: z.enum(["fixed", "salaryPercent"]).default("fixed"),
+  // Fields for salary-based contributions
+  annualSalary: z.number().nonnegative().default(0),
+  salaryContributionPercent: z.number().min(0).max(100).default(0),
+  salaryAnnualRaisePercent: z.number().min(0).max(50).default(0),
   currentAge: z.number().int().min(18).max(100),
   annualExpenses: z.number().positive(),
   annualReturn: z.number().min(0).max(30).default(7),

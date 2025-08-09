@@ -2,7 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Edit, Trash2, Plus, Save, FolderOpen } from "lucide-react";
 import { useState } from "react";
 import type { StoredScenario } from "@/lib/local-storage";
@@ -17,12 +23,12 @@ interface ScenarioComparisonProps {
   onDeleteScenario: (id: string) => void;
 }
 
-export function ScenarioComparison({ 
-  scenarios, 
-  currentInputs, 
-  onSaveScenario, 
-  onLoadScenario, 
-  onDeleteScenario 
+export function ScenarioComparison({
+  scenarios,
+  currentInputs,
+  onSaveScenario,
+  onLoadScenario,
+  onDeleteScenario,
 }: ScenarioComparisonProps) {
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [scenarioName, setScenarioName] = useState("");
@@ -37,7 +43,7 @@ export function ScenarioComparison({
 
   // Show up to 3 scenarios (current + 2 saved)
   const displayScenarios = scenarios.slice(0, 2);
-  
+
   return (
     <div className="mt-8">
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -49,7 +55,7 @@ export function ScenarioComparison({
           <div className="flex space-x-2">
             <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
               <DialogTrigger asChild>
-                <Button 
+                <Button
                   className="bg-primary text-white hover:bg-blue-700"
                   data-testid="button-save-scenario"
                 >
@@ -73,14 +79,14 @@ export function ScenarioComparison({
                     />
                   </div>
                   <div className="flex justify-end space-x-2">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       onClick={() => setSaveDialogOpen(false)}
                       data-testid="button-cancel-save"
                     >
                       Cancel
                     </Button>
-                    <Button 
+                    <Button
                       onClick={handleSaveScenario}
                       data-testid="button-confirm-save"
                     >
@@ -92,7 +98,7 @@ export function ScenarioComparison({
             </Dialog>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Current Scenario */}
           <Card className="bg-blue-50 border-2 border-blue-200">
@@ -104,29 +110,78 @@ export function ScenarioComparison({
                 </span>
               </div>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm" data-testid="current-scenario">
+            <CardContent
+              className="space-y-3 text-sm"
+              data-testid="current-scenario"
+            >
               <div className="flex justify-between">
                 <span className="text-gray-600">Starting Investments:</span>
-                <span className="font-medium">{formatCurrency(currentInputs.startingInvestments)}</span>
+                <span className="font-medium">
+                  {formatCurrency(currentInputs.startingInvestments)}
+                </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Monthly Contribution:</span>
-                <span className="font-medium">{formatCurrency(currentInputs.monthlyContributions)}</span>
+                <span className="text-gray-600">Contribution Method:</span>
+                <span className="font-medium">
+                  {(currentInputs.contributionMode || "fixed") ===
+                  "salaryPercent"
+                    ? "% of Salary"
+                    : "Fixed Monthly"}
+                </span>
               </div>
+              {(currentInputs.contributionMode || "fixed") ===
+              "salaryPercent" ? (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Annual Salary:</span>
+                    <span className="font-medium">
+                      {formatCurrency(currentInputs.annualSalary || 0)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Contrib %:</span>
+                    <span className="font-medium">
+                      {(currentInputs.salaryContributionPercent || 0).toFixed(
+                        1
+                      )}
+                      %
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Raise %:</span>
+                    <span className="font-medium">
+                      {(currentInputs.salaryAnnualRaisePercent || 0).toFixed(1)}
+                      %
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Monthly Contribution:</span>
+                  <span className="font-medium">
+                    {formatCurrency(currentInputs.monthlyContributions)}
+                  </span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span className="text-gray-600">Current Age:</span>
                 <span className="font-medium">{currentInputs.currentAge}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Annual Expenses:</span>
-                <span className="font-medium">{formatCurrency(currentInputs.annualExpenses)}</span>
+                <span className="font-medium">
+                  {formatCurrency(currentInputs.annualExpenses)}
+                </span>
               </div>
             </CardContent>
           </Card>
 
           {/* Saved Scenarios */}
           {displayScenarios.map((scenario, index) => (
-            <Card key={scenario.id} className="bg-gray-50 border border-gray-200">
+            <Card
+              key={scenario.id}
+              className="bg-gray-50 border border-gray-200"
+            >
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <CardTitle className="text-base">{scenario.name}</CardTitle>
@@ -143,24 +198,72 @@ export function ScenarioComparison({
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-3 text-sm" data-testid={`saved-scenario-${index}`}>
+              <CardContent
+                className="space-y-3 text-sm"
+                data-testid={`saved-scenario-${index}`}
+              >
                 <div className="flex justify-between">
                   <span className="text-gray-600">Starting Investments:</span>
-                  <span className="font-medium">{formatCurrency(scenario.startingInvestments)}</span>
+                  <span className="font-medium">
+                    {formatCurrency(scenario.startingInvestments)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Monthly Contribution:</span>
-                  <span className="font-medium">{formatCurrency(scenario.monthlyContributions)}</span>
+                  <span className="text-gray-600">Contribution Method:</span>
+                  <span className="font-medium">
+                    {((scenario as any).contributionMode || "fixed") ===
+                    "salaryPercent"
+                      ? "% of Salary"
+                      : "Fixed Monthly"}
+                  </span>
                 </div>
+                {((scenario as any).contributionMode || "fixed") ===
+                "salaryPercent" ? (
+                  <>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Annual Salary:</span>
+                      <span className="font-medium">
+                        {formatCurrency((scenario as any).annualSalary || 0)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Contrib %:</span>
+                      <span className="font-medium">
+                        {(
+                          (scenario as any).salaryContributionPercent || 0
+                        ).toFixed(1)}
+                        %
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Raise %:</span>
+                      <span className="font-medium">
+                        {(
+                          (scenario as any).salaryAnnualRaisePercent || 0
+                        ).toFixed(1)}
+                        %
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Monthly Contribution:</span>
+                    <span className="font-medium">
+                      {formatCurrency(scenario.monthlyContributions)}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-gray-600">Current Age:</span>
                   <span className="font-medium">{scenario.currentAge}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Annual Expenses:</span>
-                  <span className="font-medium">{formatCurrency(scenario.annualExpenses)}</span>
+                  <span className="font-medium">
+                    {formatCurrency(scenario.annualExpenses)}
+                  </span>
                 </div>
-                <Button 
+                <Button
                   className="w-full bg-gray-200 text-gray-700 hover:bg-gray-300"
                   onClick={() => onLoadScenario(scenario)}
                   data-testid={`button-load-scenario-${index}`}
@@ -178,7 +281,9 @@ export function ScenarioComparison({
               <CardContent className="flex items-center justify-center h-full min-h-[200px]">
                 <div className="text-center">
                   <Plus className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-500 text-sm">Save another scenario to compare</p>
+                  <p className="text-gray-500 text-sm">
+                    Save another scenario to compare
+                  </p>
                 </div>
               </CardContent>
             </Card>

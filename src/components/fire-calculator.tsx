@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { WindfallManager } from "@/components/windfall-manager";
 import { InvestmentChart } from "@/components/investment-chart";
 import { ScenarioComparison } from "@/components/scenario-comparison";
@@ -40,6 +41,10 @@ export function FireCalculator() {
   const [inputs, setInputs] = useState<FireInputs>({
     startingInvestments: 150000,
     monthlyContributions: 1200,
+    contributionMode: "fixed",
+    annualSalary: 0,
+    salaryContributionPercent: 0,
+    salaryAnnualRaisePercent: 0,
     currentAge: 26,
     annualExpenses: 200000,
     annualReturn: 10,
@@ -48,6 +53,9 @@ export function FireCalculator() {
     windfalls: [],
     adjustContributionsForInflation: false,
   });
+
+  // Keep local string drafts for number inputs so clearing doesn't force 0
+  const [numberDrafts, setNumberDrafts] = useState<Record<string, string>>({});
 
   // Local scenarios state
   const [scenarios, setScenarios] = useState<StoredScenario[]>([]);
@@ -79,7 +87,7 @@ export function FireCalculator() {
   const handleSaveScenario = async (name: string) => {
     setIsLoading(true);
     try {
-      const scenarioToSave = {
+      const scenarioToSave: Omit<StoredScenario, "id" | "createdAt"> = {
         name,
         ...inputs,
         adjustContributionsForInflation: inputs.adjustContributionsForInflation,
@@ -99,6 +107,11 @@ export function FireCalculator() {
     setInputs({
       startingInvestments: scenario.startingInvestments,
       monthlyContributions: scenario.monthlyContributions,
+      contributionMode: (scenario as any).contributionMode || "fixed",
+      annualSalary: (scenario as any).annualSalary ?? 0,
+      salaryContributionPercent:
+        (scenario as any).salaryContributionPercent ?? 0,
+      salaryAnnualRaisePercent: (scenario as any).salaryAnnualRaisePercent ?? 0,
       currentAge: scenario.currentAge,
       annualExpenses: scenario.annualExpenses,
       annualReturn: scenario.annualReturn,
@@ -109,6 +122,8 @@ export function FireCalculator() {
         scenario.adjustContributionsForInflation
       ),
     });
+    // Clear any in-progress drafts when loading a scenario
+    setNumberDrafts({});
     toast({ title: `Loaded scenario: ${scenario.name}` });
   };
 
@@ -190,7 +205,7 @@ export function FireCalculator() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Input Form Section */}
         <div className="lg:col-span-1">
@@ -250,80 +265,240 @@ export function FireCalculator() {
 
                 <div>
                   <Label className="block text-sm font-medium text-gray-700 mb-2">
-                    <span className="inline-flex items-center gap-1">
-                      Monthly Contributions
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            type="button"
-                            className="text-gray-400 hover:text-gray-600"
-                            aria-label="What are monthly contributions?"
-                          >
-                            <Info size={14} />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          Amount you plan to invest each month before
-                          retirement.
-                        </TooltipContent>
-                      </Tooltip>
-                    </span>
+                    Contribution Method
                   </Label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                      $
-                    </span>
-                    <Input
-                      type="text"
-                      value={(
-                        inputs.monthlyContributions || 0
-                      ).toLocaleString()}
-                      onChange={(e) => {
-                        const value =
-                          parseInt(e.target.value.replace(/,/g, "")) || 0;
-                        updateInput("monthlyContributions", value);
-                      }}
-                      className="pl-8 pr-4 py-3"
-                      placeholder="0"
-                      data-testid="input-monthly-contributions"
-                    />
-                  </div>
-                  <div className="flex items-center space-x-2 mt-3">
-                    <Checkbox
-                      id="adjust-inflation"
-                      checked={inputs.adjustContributionsForInflation}
-                      onCheckedChange={(checked) =>
-                        updateInput("adjustContributionsForInflation", checked)
-                      }
-                      data-testid="checkbox-adjust-contributions-inflation"
-                    />
-                    <Label
-                      htmlFor="adjust-inflation"
-                      className="text-sm text-gray-600 cursor-pointer inline-flex items-center gap-1"
-                    >
-                      Adjust contributions for inflation annually
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            type="button"
-                            className="text-gray-400 hover:text-gray-600"
-                            aria-label="Adjust contributions for inflation explanation"
-                          >
-                            <Info size={14} />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          Increases your monthly contribution each year by the
-                          inflation rate to maintain purchasing power.
-                        </TooltipContent>
-                      </Tooltip>
-                    </Label>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {inputs.adjustContributionsForInflation
-                      ? "Contributions will increase each year to maintain purchasing power"
-                      : "Contributions remain constant over time"}
-                  </p>
+                  <RadioGroup
+                    value={inputs.contributionMode || "fixed"}
+                    onValueChange={(v) =>
+                      updateInput("contributionMode", v as any)
+                    }
+                    className="grid grid-cols-2 gap-3 mb-3"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem id="contrib-fixed" value="fixed" />
+                      <Label htmlFor="contrib-fixed" className="text-sm">
+                        Fixed Monthly
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        id="contrib-salary"
+                        value="salaryPercent"
+                      />
+                      <Label htmlFor="contrib-salary" className="text-sm">
+                        % of Salary
+                      </Label>
+                    </div>
+                  </RadioGroup>
+
+                  {(inputs.contributionMode || "fixed") === "fixed" ? (
+                    <>
+                      <Label className="block text-sm font-medium text-gray-700 mb-2">
+                        <span className="inline-flex items-center gap-1">
+                          Monthly Contributions
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                className="text-gray-400 hover:text-gray-600"
+                                aria-label="What are monthly contributions?"
+                              >
+                                <Info size={14} />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Amount you plan to invest each month before
+                              retirement.
+                            </TooltipContent>
+                          </Tooltip>
+                        </span>
+                      </Label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                          $
+                        </span>
+                        <Input
+                          type="text"
+                          value={(
+                            inputs.monthlyContributions || 0
+                          ).toLocaleString()}
+                          onChange={(e) => {
+                            const value =
+                              parseInt(e.target.value.replace(/,/g, "")) || 0;
+                            updateInput("monthlyContributions", value);
+                          }}
+                          className="pl-8 pr-4 py-3"
+                          placeholder="0"
+                          data-testid="input-monthly-contributions"
+                        />
+                      </div>
+                      <div className="flex items-center space-x-2 mt-3">
+                        <Checkbox
+                          id="adjust-inflation"
+                          checked={inputs.adjustContributionsForInflation}
+                          onCheckedChange={(checked) =>
+                            updateInput(
+                              "adjustContributionsForInflation",
+                              checked
+                            )
+                          }
+                          data-testid="checkbox-adjust-contributions-inflation"
+                        />
+                        <Label
+                          htmlFor="adjust-inflation"
+                          className="text-sm text-gray-600 cursor-pointer inline-flex items-center gap-1"
+                        >
+                          Adjust contributions for inflation annually
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                className="text-gray-400 hover:text-gray-600"
+                                aria-label="Adjust contributions for inflation explanation"
+                              >
+                                <Info size={14} />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Increases your monthly contribution each year by
+                              the inflation rate.
+                            </TooltipContent>
+                          </Tooltip>
+                        </Label>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {inputs.adjustContributionsForInflation
+                          ? "Contributions will increase each year to maintain purchasing power"
+                          : "Contributions remain constant over time"}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="col-span-3">
+                          <Label className="block text-sm font-medium text-gray-700 mb-2">
+                            Annual Salary
+                          </Label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                              $
+                            </span>
+                            <Input
+                              type="text"
+                              value={(
+                                inputs.annualSalary || 0
+                              ).toLocaleString()}
+                              onChange={(e) => {
+                                const value =
+                                  parseInt(e.target.value.replace(/,/g, "")) ||
+                                  0;
+                                updateInput("annualSalary", value);
+                              }}
+                              className="pl-8 pr-4 py-3"
+                              placeholder="0"
+                              data-testid="input-annual-salary"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <Label className="block text-sm font-medium text-gray-700 mb-2">
+                            Contribute % of Salary
+                          </Label>
+                          <div className="relative">
+                            <Input
+                              type="number"
+                              value={
+                                numberDrafts.salaryContributionPercent ??
+                                String(inputs.salaryContributionPercent || 0)
+                              }
+                              onChange={(e) =>
+                                setNumberDrafts((d) => ({
+                                  ...d,
+                                  salaryContributionPercent: e.target.value,
+                                }))
+                              }
+                              onBlur={(e) => {
+                                const v = parseFloat(e.target.value);
+                                updateInput(
+                                  "salaryContributionPercent",
+                                  isNaN(v) ? 0 : v
+                                );
+                                setNumberDrafts((d) => {
+                                  const c: any = { ...d };
+                                  delete c.salaryContributionPercent;
+                                  return c;
+                                });
+                              }}
+                              step="0.1"
+                              className="pr-8 text-sm"
+                              data-testid="input-salary-contribution-percent"
+                            />
+                            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
+                              %
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <Label className="block text-sm font-medium text-gray-700 mb-2">
+                            Expected Annual Raise
+                          </Label>
+                          <div className="flex items-center gap-2">
+                            <div className="relative flex-1">
+                              <Input
+                                type="number"
+                                value={
+                                  numberDrafts.salaryAnnualRaisePercent ??
+                                  String(inputs.salaryAnnualRaisePercent || 0)
+                                }
+                                onChange={(e) =>
+                                  setNumberDrafts((d) => ({
+                                    ...d,
+                                    salaryAnnualRaisePercent: e.target.value,
+                                  }))
+                                }
+                                onBlur={(e) => {
+                                  const v = parseFloat(e.target.value);
+                                  updateInput(
+                                    "salaryAnnualRaisePercent",
+                                    isNaN(v) ? 0 : v
+                                  );
+                                  setNumberDrafts((d) => {
+                                    const c: any = { ...d };
+                                    delete c.salaryAnnualRaisePercent;
+                                    return c;
+                                  });
+                                }}
+                                step="0.1"
+                                className="pr-8 text-sm"
+                                data-testid="input-salary-annual-raise-percent"
+                              />
+                              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
+                                %
+                              </span>
+                            </div>
+                            <span className="text-xs text-gray-500 whitespace-nowrap">
+                              ={" "}
+                              {formatCurrencyDetailed(
+                                Math.round(
+                                  ((inputs.annualSalary || 0) *
+                                    ((inputs.salaryContributionPercent || 0) /
+                                      100)) /
+                                    12
+                                )
+                              )}{" "}
+                              / mo
+                            </span>
+                          </div>
+                        </div>
+                        <div className="col-span-3">
+                          <p className="text-xs text-gray-500 mt-1">
+                            Annual contribution will be salary × contribution %
+                            and will grow with your raises.
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 <div>
@@ -349,10 +524,22 @@ export function FireCalculator() {
                   </Label>
                   <Input
                     type="number"
-                    value={inputs.currentAge}
+                    value={numberDrafts.currentAge ?? String(inputs.currentAge)}
                     onChange={(e) =>
-                      updateInput("currentAge", parseInt(e.target.value) || 0)
+                      setNumberDrafts((d) => ({
+                        ...d,
+                        currentAge: e.target.value,
+                      }))
                     }
+                    onBlur={(e) => {
+                      const v = parseInt(e.target.value);
+                      updateInput("currentAge", isNaN(v) ? 0 : v);
+                      setNumberDrafts((d) => {
+                        const c: any = { ...d };
+                        delete c.currentAge;
+                        return c;
+                      });
+                    }}
                     className="px-4 py-3"
                     placeholder="Years"
                     data-testid="input-current-age"
@@ -434,13 +621,25 @@ export function FireCalculator() {
                     <div className="relative">
                       <Input
                         type="number"
-                        value={inputs.annualReturn}
-                        onChange={(e) =>
-                          updateInput(
-                            "annualReturn",
-                            parseFloat(e.target.value) || 0
-                          )
+                        value={
+                          numberDrafts.annualReturn ??
+                          String(inputs.annualReturn)
                         }
+                        onChange={(e) =>
+                          setNumberDrafts((d) => ({
+                            ...d,
+                            annualReturn: e.target.value,
+                          }))
+                        }
+                        onBlur={(e) => {
+                          const v = parseFloat(e.target.value);
+                          updateInput("annualReturn", isNaN(v) ? 0 : v);
+                          setNumberDrafts((d) => {
+                            const c: any = { ...d };
+                            delete c.annualReturn;
+                            return c;
+                          });
+                        }}
                         step="0.1"
                         className="pr-8 text-sm"
                         data-testid="input-annual-return"
@@ -475,13 +674,25 @@ export function FireCalculator() {
                     <div className="relative">
                       <Input
                         type="number"
-                        value={inputs.inflationRate}
-                        onChange={(e) =>
-                          updateInput(
-                            "inflationRate",
-                            parseFloat(e.target.value) || 0
-                          )
+                        value={
+                          numberDrafts.inflationRate ??
+                          String(inputs.inflationRate)
                         }
+                        onChange={(e) =>
+                          setNumberDrafts((d) => ({
+                            ...d,
+                            inflationRate: e.target.value,
+                          }))
+                        }
+                        onBlur={(e) => {
+                          const v = parseFloat(e.target.value);
+                          updateInput("inflationRate", isNaN(v) ? 0 : v);
+                          setNumberDrafts((d) => {
+                            const c: any = { ...d };
+                            delete c.inflationRate;
+                            return c;
+                          });
+                        }}
                         step="0.1"
                         className="pr-8 text-sm"
                         data-testid="input-inflation-rate"
@@ -516,13 +727,25 @@ export function FireCalculator() {
                     <div className="relative">
                       <Input
                         type="number"
-                        value={inputs.withdrawalRate}
-                        onChange={(e) =>
-                          updateInput(
-                            "withdrawalRate",
-                            parseFloat(e.target.value) || 0
-                          )
+                        value={
+                          numberDrafts.withdrawalRate ??
+                          String(inputs.withdrawalRate)
                         }
+                        onChange={(e) =>
+                          setNumberDrafts((d) => ({
+                            ...d,
+                            withdrawalRate: e.target.value,
+                          }))
+                        }
+                        onBlur={(e) => {
+                          const v = parseFloat(e.target.value);
+                          updateInput("withdrawalRate", isNaN(v) ? 0 : v);
+                          setNumberDrafts((d) => {
+                            const c: any = { ...d };
+                            delete c.withdrawalRate;
+                            return c;
+                          });
+                        }}
                         step="0.1"
                         className="pr-8 text-sm"
                         data-testid="input-withdrawal-rate"
