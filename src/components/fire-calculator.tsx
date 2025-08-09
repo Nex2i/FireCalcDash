@@ -32,9 +32,9 @@ export function FireCalculator() {
 
   // Form state
   const [inputs, setInputs] = useState<FireInputs>({
-    startingInvestments: 500000,
-    monthlyContributions: 8000,
-    currentAge: 35,
+    startingInvestments: 150000,
+    monthlyContributions: 1200,
+    currentAge: 26,
     annualExpenses: 200000,
     annualReturn: 10,
     inflationRate: 3,
